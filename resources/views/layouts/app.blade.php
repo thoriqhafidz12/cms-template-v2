@@ -1,0 +1,183 @@
+<x-template-top />
+
+<body id="page-top">
+    <div class="loading-page">
+        <div class="lds-ring">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <div id="Moduleloader-page" class="jssorl-009-spin">
+        <img src="assets/img/spinner.svg">
+    </div>
+    <div class="bottom-slide">
+        <div id="wrapper">
+
+            {{-- Sidebar --}}
+            <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+                <a class="sidebar-brand d-flex align-items-center justify-content-center"
+                    href="{{ route('dashboard') }}">
+                    <div class="sidebar-brand-icon rotate-n-15">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <div class="sidebar-brand-text mx-3">KOPERASI-TH</div>
+                </a>
+
+                <hr class="sidebar-divider my-0">
+
+                @php
+                    // Ambil ID menu yang diizinkan untuk role user saat ini
+                    $user = Auth::user();
+                    $allowedMenuIds = $user->roleRelation?->menus()->pluck('menu.mId')->toArray() ?? [];
+
+                    $allMenus = App\Models\Menu::where('mIsActive', 1)
+                        ->when(!empty($allowedMenuIds), function ($query) use ($allowedMenuIds) {
+                            // Jika role punya assignment → filter
+                            return $query->whereIn('mId', $allowedMenuIds);
+                        })
+                        ->orderBy('mOrder')
+                        ->get();
+
+                    $parentMenus = $allMenus->whereNull('mParentId');
+                    $childMenus = $allMenus->whereNotNull('mParentId')->groupBy('mParentId');
+
+                    /**
+                     * Resolve route name dari mRoute prefix.
+                     * Cek: 'dashboard' → Route::has('dashboard') = true
+                     *      'users'    → Route::has('users') = false, tapi Route::has('users.index') = true
+                     */
+                    $resolveRoute = function (?string $mRoute): ?string {
+                        if (empty($mRoute)) {
+                            return null;
+                        }
+                        if (\Illuminate\Support\Facades\Route::has($mRoute)) {
+                            return $mRoute;
+                        }
+                        if (\Illuminate\Support\Facades\Route::has($mRoute . '.index')) {
+                            return $mRoute . '.index';
+                        }
+                        return null;
+                    };
+
+                    /**
+                     * Cek apakah menu ini (atau turunannya di level berapa pun) sedang aktif.
+                     * Dipakai juga oleh partial sidebar-menu untuk membuka collapse induk
+                     * ketika child di level 2+ sedang aktif.
+                     */
+                    $isMenuActive = function ($menu) use ($childMenus, $resolveRoute, &$isMenuActive): bool {
+                        $routeName = $resolveRoute($menu->mRoute);
+                        if ($routeName && request()->routeIs($routeName . '*')) {
+                            return true;
+                        }
+                        foreach ($childMenus->get($menu->mId, collect()) as $child) {
+                            if ($isMenuActive($child)) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    };
+                @endphp
+
+                @foreach ($parentMenus as $menu)
+                    @include('layouts.partials.sidebar-menu', [
+                        'menu'      => $menu,
+                        'depth'     => 1,
+                        'ancestors' => [],
+                    ])
+                @endforeach
+
+                <hr class="sidebar-divider d-none d-md-block">
+
+                <div class="text-center d-none d-md-inline">
+                    <button class="rounded-circle border-0" id="sidebarToggle"></button>
+                </div>
+
+            </ul>
+
+            {{-- Mobile drawer backdrop --}}
+            <div class="sidebar-backdrop" aria-hidden="true"></div>
+
+            {{-- Content Wrapper --}}
+            <div id="content-wrapper" class="d-flex flex-column">
+
+                <div id="content">
+
+                    {{-- Topbar --}}
+                    <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                            <i class="fa fa-bars"></i>
+                        </button>
+
+                        <ul class="navbar-nav ml-auto">
+                            <div class="topbar-divider d-none d-sm-block"></div>
+
+                            <li class="nav-item dropdown no-arrow">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span
+                                        class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->name }}</span>
+                                    <img class="img-profile rounded-circle"
+                                        src="{{ url('/') }}/assets/img/user.svg">
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                    aria-labelledby="userDropdown">
+                                    <a class="dropdown-item" href="#">
+                                        <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Profile
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                            Logout
+                                        </button>
+                                    </form>
+                                </div>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    {{-- Main Content --}}
+                    <div class="container-fluid">
+                        {{-- Flash Messages --}}
+                        @if (session('success'))
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                {{ session('success') }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        @endif
+
+                        @if (session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                {{ session('error') }}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        @endif
+
+                        @yield('content')
+                    </div>
+                </div>
+
+                {{-- Footer --}}
+                <footer class="sticky-footer bg-white">
+                    <div class="container my-auto">
+                        <div class="copyright text-center my-auto">
+                            <span>Copyright &copy; KEURIQ-TH {{ date('Y') }}</span>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+</body>
+<x-template-bottom />
