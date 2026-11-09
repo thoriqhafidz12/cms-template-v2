@@ -309,6 +309,36 @@ transition: all 0.5s cubic-bezier(0.75, 0.2, 0.26, 0.7);
     to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── BATAS TINGGI DAFTAR HASIL ─────────────────────────
+   max-height di bawah hanya FALLBACK (relatif terhadap viewport)
+   bila JS tidak sempat berjalan. Nilai pastinya selalu dihitung
+   ulang oleh JS berdasarkan posisi dropdown terhadap footer,
+   lalu ditimpa lewat inline style. */
+.select2-dropdown-custom .select2-results__options {
+    max-height: 60vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #c9cbe0 #f2f3f8;
+}
+
+.select2-dropdown-custom .select2-results__options::-webkit-scrollbar {
+    width: 8px;
+}
+
+.select2-dropdown-custom .select2-results__options::-webkit-scrollbar-track {
+    background: #f2f3f8;
+    border-radius: 4px;
+}
+
+.select2-dropdown-custom .select2-results__options::-webkit-scrollbar-thumb {
+    background: #c9cbe0;
+    border-radius: 4px;
+}
+
+.select2-dropdown-custom .select2-results__options::-webkit-scrollbar-thumb:hover {
+    background: #a7aac4;
+}
+
 /* Search input di dalam dropdown */
 .select2-dropdown-custom .select2-search__field {
     border: 1px solid #e3e6f0 !important;
@@ -619,41 +649,6 @@ transition: all 0.5s cubic-bezier(0.75, 0.2, 0.26, 0.7);
   }
 }
 
-/* ──────────────────────────────────────────────────────
-   SIDEBAR SUBMENU BERTINGKAT (collapse di dalam collapse, level 2+)
-   Dipakai layouts/partials/sidebar-menu.blade.php.
-   Container memakai class .submenu (bukan .collapse) agar tidak
-   ikut kena aturan flyout sb-admin-2 untuk
-   .sidebar .nav-item .collapse (position:absolute).
-   ────────────────────────────────────────────────────── */
-.sidebar .collapse-inner .submenu {
-  display: none;
-}
-.sidebar .collapse-inner .submenu.show {
-  display: block;
-}
-.sidebar .submenu .submenu-inner {
-  padding-left: 0.75rem; /* indent bertingkat mengikuti kedalaman */
-}
-.sidebar .collapse-item[data-toggle="submenu"] {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.sidebar .collapse-item[data-toggle="submenu"]::after {
-  width: 1rem;
-  text-align: center;
-  border: 0;
-  font-weight: 900;
-  font-size: 0.7rem;
-  opacity: 0.6;
-  content: '\f107'; /* fa-angle-down */
-  font-family: 'Font Awesome 5 Free';
-}
-.sidebar .collapse-item[data-toggle="submenu"].collapsed::after {
-  content: '\f105'; /* fa-angle-right */
-}
-
 /* ══════════════════════════════════════════════════════════
    MOBILE CARD TABLES  (< 576px) — baris jadi kartu bertumpuk
    Pemakaian: <table class="table table-bordered table-mobile-card">
@@ -792,4 +787,35 @@ transition: all 0.5s cubic-bezier(0.75, 0.2, 0.26, 0.7);
     margin-top: 1rem !important;
     margin-bottom: 1rem !important;
   }
+}
+
+/* ══════════════════════════════════════════════════════════
+   SUBMENU BERSARANG LEVEL 3 (menu di dalam collapse child)
+   Contoh: Master → COA → AKUN / OBJEK (layouts/app.blade.php)
+   ══════════════════════════════════════════════════════════ */
+
+/* Chevron toggle child yang punya submenu — berputar saat terbuka */
+.sidebar .collapse-inner .submenu-toggle .fa-chevron-down {
+  transition: transform 0.15s ease;
+}
+.sidebar .collapse-inner .submenu-toggle.collapsed .fa-chevron-down {
+  transform: rotate(-90deg);
+}
+
+/* Wadah item level 3: indent + latar abu muda agar terlihat berjenjang */
+.sidebar .collapse-inner .collapse-inner-nested {
+  margin-left: 0.75rem;
+  box-shadow: none;
+}
+.sidebar .collapse-inner .collapse-inner-nested .collapse-item {
+  padding-left: 1.5rem;
+}
+
+/* Mini-rail (sidebar.toggled) memakai flyout absolut untuk collapse
+   level 2 — collapse bersarang level 3 harus tetap inline di dalamnya */
+.sidebar .nav-item .collapse .collapse-inner .collapse,
+.sidebar .nav-item .collapse .collapse-inner .collapsing {
+  position: relative;
+  left: 0;
+  top: 0;
 }

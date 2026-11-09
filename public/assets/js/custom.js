@@ -14,18 +14,39 @@ $(".navbar-left").animate({ left: "0px" }, 200);
 $(".bottom-slide").animate({ bottom: "0px" }, 200);
 
 /**
- * Format input angka dengan sparator ribuan (.)
- * Dipanggil via oninput="autoNumericDot(this, 'targetHiddenId')"
+ * Format input angka dengan separator ribuan (.) dan desimal koma (,)
+ * maksimal 2 digit di belakang koma.
+ * Contoh: 12231,32 -> 12.231,32
+ * Dipanggil via oninput="autoNumericDot(this, 'targetHiddenId')".
+ * Koma adalah satu-satunya pemisah desimal saat mengetik; titik selalu
+ * dianggap separator ribuan. Nilai desimal bertitik dari API (mis. 12231.32)
+ * dinormalisasi ke koma dulu sebelum memanggil fungsi ini.
  */
 function autoNumericDot(el, targetId) {
     let cursorPos = el.selectionStart;
     let oldLength = el.value.length;
+    let val = el.value;
 
-    // Hapus semua karakter selain angka
-    let val = el.value.replace(/\D/g, '');
+    let intPart = '';
+    let decPart = '';
 
-    // Format dengan sparator ribuan (.)
-    let formatted = val.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    if (val.includes(',')) {
+        // Koma = pemisah desimal (format Indonesia)
+        const parts = val.split(',');
+        intPart = parts[0].replace(/\D/g, '');
+        decPart = parts[1].replace(/\D/g, '').slice(0, 2);
+    } else {
+        // Tanpa koma: titik hanya separator ribuan, seluruhnya integer.
+        // Dengan begitu menghapus koma saat mengedit tidak membuat sisa
+        // angka mendadak berubah menjadi desimal.
+        intPart = val.replace(/\D/g, '');
+    }
+
+    // Format bagian integer dengan separator ribuan (.)
+    let formatted = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    if (decPart !== '' || val.includes(',')) {
+        formatted += ',' + decPart;
+    }
 
     // Koreksi posisi kursor setelah formatting
     let newLength = formatted.length;
@@ -33,8 +54,30 @@ function autoNumericDot(el, targetId) {
     el.value = formatted;
     el.selectionStart = el.selectionEnd = cursorPos + diff;
 
-    // Simpan nilai asli (angka saja) ke hidden input
-    document.getElementById(targetId).value = val;
+    // Simpan nilai mentah ke hidden input (desimal pakai titik agar
+    // bisa langsung diparse/disimpan server)
+    document.getElementById(targetId).value = intPart + (decPart !== '' ? '.' + decPart : '');
+}
+
+/**
+ * Isi field type angka (display + hidden) dari nilai item autocomplete/API.
+ * Normalisasi nilai: "12231.32" (titik desimal) -> "12231,32" agar dibaca
+ * sebagai desimal; nilai integer atau berformat koma dilewatkan apa adanya.
+ * Setelahnya memanggil autoNumericDot agar display terformat ribuan dan
+ * hidden terisi nilai mentah.
+ *
+ * Contoh: fillAngka('tppNominalBayar', item.totalTagihan)
+ *         fillAngka('tppNominalBayar', '')   // kosongkan field
+ */
+function fillAngka(fieldName, value) {
+    const rawVal = String(value ?? '');
+    const displayVal = rawVal.includes(',') ? rawVal : rawVal.replace('.', ',');
+
+    const displayEl = document.getElementById(fieldName + '_display');
+    if (!displayEl) return;
+
+    displayEl.value = displayVal;
+    autoNumericDot(displayEl, fieldName);
 }
 
 // ──────────────────────────────────────────────────
@@ -216,11 +259,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // 4) Klik link menu sungguhan → tutup drawer; toggle submenu
-    //    (data-toggle="collapse" / "submenu") TIDAK boleh menutup drawer,
+    //    (data-toggle="collapse") TIDAK boleh menutup drawer,
     //    agar submenu tetap bisa di-expand di dalam drawer.
+    //    (termasuk submenu bersarang level 3 — .collapse-item.submenu-toggle)
     $(document).on('click',
-        '.sidebar .collapse-item:not([data-toggle="submenu"]), ' +
-        '.sidebar a.nav-link:not([data-toggle="collapse"])',
+        '.sidebar .collapse-item:not([data-toggle="collapse"]), .sidebar a.nav-link:not([data-toggle="collapse"])',
         function () {
             if (isMobile() && $('body').hasClass('sidebar-toggled')) {
                 $('body').removeClass('sidebar-toggled drawer-user-open');
@@ -229,43 +272,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
     // 5) Kembali ke desktop: buang penanda (desktop memakai perilaku
-    //    toggle asli SB, termasuk #sidebarToggle bawah).
+    //    toggle asli SB, termasuk #sidebarToggle bawah)s.
     $(window).on('resize', function () {
         if (!isMobile()) {
             $('body').removeClass('drawer-user-open');
         }
     });
 })();
-
-// ──────────────────────────────────────────────────────────────
-// SUBMENU BERTINGKAT (collapse di dalam collapse, level 2+)
-// Toggle di-render oleh layouts/partials/sidebar-menu.blade.php.
-// Sengaja TIDAK memakai plugin collapse Bootstrap agar container
-// submenu tidak ikut kena CSS flyout sb-admin-2
-// (.sidebar .nav-item .collapse → position:absolute).
-// ──────────────────────────────────────────────────────────────
-$(document).on('click', '.sidebar [data-toggle="submenu"]', function (e) {
-    e.preventDefault();
-    var $toggle = $(this);
-    var $sub = $($toggle.attr('data-target'));
-    if (!$sub.length) {
-        return;
-    }
-    var isOpen = $sub.hasClass('show');
-
-    // Accordion per grup: tutup submenu lain di container yang sama
-    // (collapse-inner untuk level 2, submenu-inner untuk level 3+).
-    $toggle.closest('.submenu-inner, .collapse-inner')
-        .children('.submenu.show')
-        .each(function () {
-            $(this).removeClass('show').slideUp(150);
-            $('.sidebar [data-target="#' + this.id + '"]')
-                .addClass('collapsed').attr('aria-expanded', 'false');
-        });
-
-    if (!isOpen) {
-        $sub.slideDown(150).addClass('show');
-    }
-    $toggle.toggleClass('collapsed', !isOpen)
-        .attr('aria-expanded', isOpen ? 'false' : 'true');
-});

@@ -2,26 +2,39 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>CMS-TH</title>
+    <meta content="width=device-width, initial-scale=1.0, shrink-to-fit=no" name="viewport" />
+    <link rel="icon" href="{{ url('/') }}/assets/img/kaiadmin/favicon.ico" type="image/x-icon" />
 
-    <title>CMS-APP</title>
+    <!-- Fonts and icons -->
+    <script src="{{ url('/') }}/assets/js/plugin/webfont/webfont.min.js"></script>
+    <script>
+        WebFont.load({
+            google: {
+                families: ["Public Sans:300,400,500,600,700"]
+            },
+            custom: {
+                families: [
+                    "Font Awesome 5 Solid",
+                    "Font Awesome 5 Regular",
+                    "Font Awesome 5 Brands",
+                    "simple-line-icons",
+                ],
+                urls: ["assets/css/fonts.min.css"],
+            },
+            active: function() {
+                sessionStorage.fonts = true;
+            },
+        });
+    </script>
 
-    <!-- Custom fonts for this template-->
-    <link href="{{ url('/') }}/assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="{{ url('/') }}/assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ url('/') }}/assets/css/plugins.min.css" />
+    <link rel="stylesheet" href="{{ url('/') }}/assets/css/kaiadmin.min.css" />
+    <link rel="stylesheet" href="{{ url('/') }}/assets/css/custom.css" />
 
-    <!-- Custom styles for this template-->
-    <link href="{{ url('/') }}/assets/css/sb-admin-2.min.css" rel="stylesheet">
-    <link href="{{ url('/') }}/assets/css/custom.css" rel="stylesheet">
-
-    <!-- SweetAlert2 — dipakai custom.js untuk konfirmasi hapus -->
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-    <!-- Custom styles for this page -->
-    <link href="{{ url('/') }}/assets/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <!-- CSS Just for demo purpose, don't include it in your project -->
+    <link rel="stylesheet" href="{{ url('/') }}/assets/css/demo.css" />
 </head>

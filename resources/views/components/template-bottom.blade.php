@@ -1,25 +1,68 @@
- <!-- Bootstrap core JavaScript-->
- <script src="{{ url('/') }}/assets/vendor/jquery/jquery.min.js"></script>
- <script src="{{ url('/') }}/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!--   Core JS Files   -->
+<script src="{{ url('/') }}/assets/js/core/jquery-3.7.1.min.js"></script>
+<script src="{{ url('/') }}/assets/js/core/popper.min.js"></script>
+<script src="{{ url('/') }}/assets/js/core/bootstrap.min.js"></script>
+<script src="{{ url('/') }}/assets/js/custom.js"></script>
 
- <!-- Core plugin JavaScript-->
- <script src="{{ url('/') }}/assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+<!-- jQuery Scrollbar -->
+<script src="{{ url('/') }}/assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
 
- <!-- Custom scripts for all pages-->
- <script src="{{ url('/') }}/assets/js/sb-admin-2.min.js"></script>
+<!-- Chart JS -->
+<script src="{{ url('/') }}/assets/js/plugin/chart.js/chart.min.js"></script>
 
- <!-- SweetAlert2 — dipakai custom.js untuk konfirmasi hapus -->
- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
- <script src="{{ url('/') }}/assets/js/custom.js"></script>
+<!-- jQuery Sparkline -->
+<script src="{{ url('/') }}/assets/js/plugin/jquery.sparkline/jquery.sparkline.min.js"></script>
 
- <!-- Page level plugins -->
- <script src="{{ url('/') }}/assets/vendor/datatables/jquery.dataTables.min.js"></script>
- <script src="{{ url('/') }}/assets/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+<!-- Chart Circle -->
+<script src="{{ url('/') }}/assets/js/plugin/chart-circle/circles.min.js"></script>
 
- <!-- Page level custom scripts -->
- <script src="{{ url('/') }}/assets/js/demo/datatables-demo.js"></script>
+<!-- Datatables -->
+<script src="{{ url('/') }}/assets/js/plugin/datatables/datatables.min.js"></script>
 
+<!-- Bootstrap Notify -->
+<script src="{{ url('/') }}/assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
 
- @stack('scripts')
+<!-- jQuery Vector Maps -->
+<script src="{{ url('/') }}/assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
+<script src="{{ url('/') }}/assets/js/plugin/jsvectormap/world.js"></script>
 
- </html>
+<!-- Sweet Alert -->
+<script src="{{ url('/') }}/assets/js/plugin/sweetalert/sweetalert.min.js"></script>
+
+<!-- Kaiadmin JS -->
+<script src="{{ url('/') }}/assets/js/kaiadmin.min.js"></script>
+
+<!-- Kaiadmin DEMO methods, don't include it in your project! -->
+<script src="{{ url('/') }}/assets/js/setting-demo.js"></script>
+<script src="{{ url('/') }}/assets/js/demo.js"></script>
+<script>
+    $("#lineChart").sparkline([102, 109, 120, 99, 110, 105, 115], {
+        type: "line",
+        height: "70",
+        width: "100%",
+        lineWidth: "2",
+        lineColor: "#177dff",
+        fillColor: "rgba(23, 125, 255, 0.14)",
+    });
+
+    $("#lineChart2").sparkline([99, 125, 122, 105, 110, 124, 115], {
+        type: "line",
+        height: "70",
+        width: "100%",
+        lineWidth: "2",
+        lineColor: "#f3545d",
+        fillColor: "rgba(243, 84, 93, .14)",
+    });
+
+    $("#lineChart3").sparkline([105, 103, 123, 100, 95, 105, 115], {
+        type: "line",
+        height: "70",
+        width: "100%",
+        lineWidth: "2",
+        lineColor: "#ffa534",
+        fillColor: "rgba(255, 165, 52, .14)",
+    });
+</script>
+</body>
+
+</html>
