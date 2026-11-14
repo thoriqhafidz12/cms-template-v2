@@ -1,0 +1,38 @@
+{
+  "name": "E-SALON — Hair, Nail & Spa Studio",
+  "short_name": "E-SALON",
+  "description": "Aplikasi Mobile PWA Salon Management System & Point of Sale",
+  "start_url": "/dashboard?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#D4C7B6",
+  "theme_color": "#841CC9",
+  "icons": [
+    {
+      "src": "/assets/img/kaiadmin/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Kasir POS",
+      "short_name": "Kasir POS",
+      "description": "Buka halaman transaksi Kasir POS",
+      "url": "/pos"
+    },
+    {
+      "name": "Booking & Antrian",
+      "short_name": "Antrian",
+      "description": "Kelola antrian walk-in dan jadwal booking",
+      "url": "/bookings"
+    },
+    {
+      "name": "Mutasi & Kartu Stok",
+      "short_name": "Stok",
+      "description": "Catat mutasi dan lihat kartu stok produk",
+      "url": "/stocks"
+    }
+  ]
+}

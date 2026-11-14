@@ -79,7 +79,7 @@
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
                 </div>
-            @elseif ($field['type'] === 'date')
+            @elseif (in_array($field['type'], ['date', 'time']))
                 <div class="{{ $field['col'] ?? 'col-md-12' }} mb-2">
                     <label>
                         {{ $field['label'] }}

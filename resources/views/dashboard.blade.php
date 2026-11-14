@@ -1,515 +1,294 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <div class="page-inner">
-            <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
-                <div>
-                    <h3 class="fw-bold mb-3">Dashboard</h3>
-                    <h6 class="op-7 mb-2">Free Bootstrap 5 Admin Dashboard</h6>
-                </div>
-                <div class="ms-md-auto py-2 py-md-0">
-                    <a href="#" class="btn btn-label-info btn-round me-2">Manage</a>
-                    <a href="#" class="btn btn-primary btn-round">Add Customer</a>
-                </div>
+    @php
+        $brandSetting = $salonProfile ?? \App\Models\SalonSetting::current();
+    @endphp
+    <div id="dashboardTabGroup" data-tab-group>
+        <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-1 pb-2">
+            <div>
+                <h4 class="fw-bold mb-0">
+                    <span class="badge bg-primary me-1">{{ $brandSetting->salon_name }}</span>
+                    Dashboard — {{ $brandSetting->tagline ?: $brandSetting->salon_name }}
+                </h4>
+                <small class="text-muted">Ringkasan operasional, antrian berjalan, dan performa stylist hari ini</small>
             </div>
-            <div class="row">
-                <div class="col-sm-6 col-md-3">
-                    <div class="card card-stats card-round">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-icon">
-                                    <div class="icon-big text-center icon-primary bubble-shadow-small">
-                                        <i class="fas fa-users"></i>
-                                    </div>
+        </div>
+
+        {{-- Top Segmented Tabs --}}
+        <div class="mobile-segmented-tabs" role="tablist">
+            <button type="button" class="seg-tab active" data-tab-target="summary"
+                onclick="switchMobileTab('dashboardTabGroup', 'summary')">
+                <i class="fas fa-chart-pie"></i> Ringkasan Hari Ini
+            </button>
+            <button type="button" class="seg-tab" data-tab-target="queues"
+                onclick="switchMobileTab('dashboardTabGroup', 'queues')">
+                <i class="fas fa-user-clock"></i> Antrian Berjalan
+                <span class="badge bg-danger ms-1">{{ $activeQueuesCount }}</span>
+            </button>
+            <button type="button" class="seg-tab" data-tab-target="performance"
+                onclick="switchMobileTab('dashboardTabGroup', 'performance')">
+                <i class="fas fa-award"></i> Stylist & Transaksi
+            </button>
+        </div>
+
+        {{-- TAB 1: Ringkasan Hari Ini (KPI Cards + Ringkasan Cepat) --}}
+        <div data-tab-pane="summary">
+            <div class="row g-2 mb-3">
+                <div class="col-6 col-md-3">
+                    <div class="card card-stats card-round mb-0 shadow-sm h-100">
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="icon-big text-center icon-primary bubble-shadow">
+                                    <i class="fas fa-calendar-check"></i>
                                 </div>
-                                <div class="col col-stats ms-3 ms-sm-0">
-                                    <div class="numbers">
-                                        <p class="card-category">Visitors</p>
-                                        <h4 class="card-title">1,294</h4>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-3">
-                    <div class="card card-stats card-round">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-icon">
-                                    <div class="icon-big text-center icon-info bubble-shadow-small">
-                                        <i class="fas fa-user-check"></i>
-                                    </div>
-                                </div>
-                                <div class="col col-stats ms-3 ms-sm-0">
-                                    <div class="numbers">
-                                        <p class="card-category">Subscribers</p>
-                                        <h4 class="card-title">1303</h4>
-                                    </div>
+                                <div class="numbers">
+                                    <p class="card-category small mb-0">Booking Hari Ini</p>
+                                    <h4 class="card-title mb-0">{{ $bookingsToday }}</h4>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6 col-md-3">
-                    <div class="card card-stats card-round">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-icon">
-                                    <div class="icon-big text-center icon-success bubble-shadow-small">
-                                        <i class="fas fa-luggage-cart"></i>
-                                    </div>
+
+                <div class="col-6 col-md-3">
+                    <div class="card card-stats card-round mb-0 shadow-sm h-100">
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="icon-big text-center icon-info bubble-shadow">
+                                    <i class="fas fa-user-clock"></i>
                                 </div>
-                                <div class="col col-stats ms-3 ms-sm-0">
-                                    <div class="numbers">
-                                        <p class="card-category">Sales</p>
-                                        <h4 class="card-title">$ 1,345</h4>
-                                    </div>
+                                <div class="numbers">
+                                    <p class="card-category small mb-0">Antrian Aktif</p>
+                                    <h4 class="card-title mb-0">{{ $activeQueuesCount }}</h4>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6 col-md-3">
-                    <div class="card card-stats card-round">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-icon">
-                                    <div class="icon-big text-center icon-secondary bubble-shadow-small">
-                                        <i class="far fa-check-circle"></i>
-                                    </div>
+
+                <div class="col-6 col-md-3">
+                    <div class="card card-stats card-round mb-0 shadow-sm h-100">
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="icon-big text-center icon-success bubble-shadow">
+                                    <i class="fas fa-money-bill-wave"></i>
                                 </div>
-                                <div class="col col-stats ms-3 ms-sm-0">
-                                    <div class="numbers">
-                                        <p class="card-category">Order</p>
-                                        <h4 class="card-title">576</h4>
-                                    </div>
+                                <div class="numbers">
+                                    <p class="card-category small mb-0">Omzet ({{ $transactionsTodayCount }} Trx)</p>
+                                    <h5 class="card-title fw-bold mb-0">Rp {{ number_format($netSalesToday, 0, ',', '.') }}</h5>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-8">
-                    <div class="card card-round">
-                        <div class="card-header">
-                            <div class="card-head-row">
-                                <div class="card-title">User Statistics</div>
-                                <div class="card-tools">
-                                    <a href="#" class="btn btn-label-success btn-round btn-sm me-2">
-                                        <span class="btn-label">
-                                            <i class="fa fa-pencil"></i>
-                                        </span>
-                                        Export
-                                    </a>
-                                    <a href="#" class="btn btn-label-info btn-round btn-sm">
-                                        <span class="btn-label">
-                                            <i class="fa fa-print"></i>
-                                        </span>
-                                        Print
-                                    </a>
+
+                <div class="col-6 col-md-3">
+                    <div class="card card-stats card-round mb-0 shadow-sm h-100">
+                        <div class="card-body p-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="icon-big text-center {{ $lowStockCount > 0 ? 'icon-danger' : 'icon-secondary' }} bubble-shadow">
+                                    <i class="fas fa-boxes"></i>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart-container" style="min-height: 375px">
-                                <canvas id="statisticsChart"></canvas>
-                            </div>
-                            <div id="myChartLegend"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card card-primary card-round">
-                        <div class="card-header">
-                            <div class="card-head-row">
-                                <div class="card-title">Daily Sales</div>
-                                <div class="card-tools">
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-label-light dropdown-toggle" type="button"
-                                            id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
-                                            aria-expanded="false">
-                                            Export
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-category">March 25 - April 02</div>
-                        </div>
-                        <div class="card-body pb-0">
-                            <div class="mb-4 mt-2">
-                                <h1>$4,578.58</h1>
-                            </div>
-                            <div class="pull-in">
-                                <canvas id="dailySalesChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card card-round">
-                        <div class="card-body pb-0">
-                            <div class="h1 fw-bold float-end text-primary">+5%</div>
-                            <h2 class="mb-2">17</h2>
-                            <p class="text-muted">Users online</p>
-                            <div class="pull-in sparkline-fix">
-                                <div id="lineChart"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card card-round">
-                        <div class="card-header">
-                            <div class="card-head-row card-tools-still-right">
-                                <h4 class="card-title">Users Geolocation</h4>
-                                <div class="card-tools">
-                                    <button class="btn btn-icon btn-link btn-primary btn-xs">
-                                        <span class="fa fa-angle-down"></span>
-                                    </button>
-                                    <button class="btn btn-icon btn-link btn-primary btn-xs btn-refresh-card">
-                                        <span class="fa fa-sync-alt"></span>
-                                    </button>
-                                    <button class="btn btn-icon btn-link btn-primary btn-xs">
-                                        <span class="fa fa-times"></span>
-                                    </button>
-                                </div>
-                            </div>
-                            <p class="card-category">
-                                Map of the distribution of users around the world
-                            </p>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="table-responsive table-hover table-sales">
-                                        <table class="table">
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <div class="flag">
-                                                            <img src="assets/img/flags/id.png" alt="indonesia" />
-                                                        </div>
-                                                    </td>
-                                                    <td>Indonesia</td>
-                                                    <td class="text-end">2.320</td>
-                                                    <td class="text-end">42.18%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="flag">
-                                                            <img src="assets/img/flags/us.png" alt="united states" />
-                                                        </div>
-                                                    </td>
-                                                    <td>USA</td>
-                                                    <td class="text-end">240</td>
-                                                    <td class="text-end">4.36%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="flag">
-                                                            <img src="assets/img/flags/au.png" alt="australia" />
-                                                        </div>
-                                                    </td>
-                                                    <td>Australia</td>
-                                                    <td class="text-end">119</td>
-                                                    <td class="text-end">2.16%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="flag">
-                                                            <img src="assets/img/flags/ru.png" alt="russia" />
-                                                        </div>
-                                                    </td>
-                                                    <td>Russia</td>
-                                                    <td class="text-end">1.081</td>
-                                                    <td class="text-end">19.65%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="flag">
-                                                            <img src="assets/img/flags/cn.png" alt="china" />
-                                                        </div>
-                                                    </td>
-                                                    <td>China</td>
-                                                    <td class="text-end">1.100</td>
-                                                    <td class="text-end">20%</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="flag">
-                                                            <img src="assets/img/flags/br.png" alt="brazil" />
-                                                        </div>
-                                                    </td>
-                                                    <td>Brasil</td>
-                                                    <td class="text-end">640</td>
-                                                    <td class="text-end">11.63%</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mapcontainer">
-                                        <div id="world-map" class="w-100" style="height: 300px"></div>
-                                    </div>
+                                <div class="numbers">
+                                    <p class="card-category small mb-0">Stok Menipis</p>
+                                    <h4 class="card-title mb-0">{{ $lowStockCount }} SKU</h4>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card card-round">
-                        <div class="card-body">
-                            <div class="card-head-row card-tools-still-right">
-                                <div class="card-title">New Customers</div>
-                                <div class="card-tools">
-                                    <div class="dropdown">
-                                        <button class="btn btn-icon btn-clean me-0" type="button"
-                                            id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
-                                            aria-expanded="false">
-                                            <i class="fas fa-ellipsis-h"></i>
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-list py-4">
-                                <div class="item-list">
-                                    <div class="avatar">
-                                        <img src="assets/img/jm_denis.jpg" alt="..."
-                                            class="avatar-img rounded-circle" />
-                                    </div>
-                                    <div class="info-user ms-3">
-                                        <div class="username">Jimmy Denis</div>
-                                        <div class="status">Graphic Designer</div>
-                                    </div>
-                                    <button class="btn btn-icon btn-link op-8 me-1">
-                                        <i class="far fa-envelope"></i>
-                                    </button>
-                                    <button class="btn btn-icon btn-link btn-danger op-8">
-                                        <i class="fas fa-ban"></i>
-                                    </button>
-                                </div>
-                                <div class="item-list">
-                                    <div class="avatar">
-                                        <span class="avatar-title rounded-circle border border-white">CF</span>
-                                    </div>
-                                    <div class="info-user ms-3">
-                                        <div class="username">Chandra Felix</div>
-                                        <div class="status">Sales Promotion</div>
-                                    </div>
-                                    <button class="btn btn-icon btn-link op-8 me-1">
-                                        <i class="far fa-envelope"></i>
-                                    </button>
-                                    <button class="btn btn-icon btn-link btn-danger op-8">
-                                        <i class="fas fa-ban"></i>
-                                    </button>
-                                </div>
-                                <div class="item-list">
-                                    <div class="avatar">
-                                        <img src="assets/img/talha.jpg" alt="..."
-                                            class="avatar-img rounded-circle" />
-                                    </div>
-                                    <div class="info-user ms-3">
-                                        <div class="username">Talha</div>
-                                        <div class="status">Front End Designer</div>
-                                    </div>
-                                    <button class="btn btn-icon btn-link op-8 me-1">
-                                        <i class="far fa-envelope"></i>
-                                    </button>
-                                    <button class="btn btn-icon btn-link btn-danger op-8">
-                                        <i class="fas fa-ban"></i>
-                                    </button>
-                                </div>
-                                <div class="item-list">
-                                    <div class="avatar">
-                                        <img src="assets/img/chadengle.jpg" alt="..."
-                                            class="avatar-img rounded-circle" />
-                                    </div>
-                                    <div class="info-user ms-3">
-                                        <div class="username">Chad</div>
-                                        <div class="status">CEO Zeleaf</div>
-                                    </div>
-                                    <button class="btn btn-icon btn-link op-8 me-1">
-                                        <i class="far fa-envelope"></i>
-                                    </button>
-                                    <button class="btn btn-icon btn-link btn-danger op-8">
-                                        <i class="fas fa-ban"></i>
-                                    </button>
-                                </div>
-                                <div class="item-list">
-                                    <div class="avatar">
-                                        <span class="avatar-title rounded-circle border border-white bg-primary">H</span>
-                                    </div>
-                                    <div class="info-user ms-3">
-                                        <div class="username">Hizrian</div>
-                                        <div class="status">Web Designer</div>
-                                    </div>
-                                    <button class="btn btn-icon btn-link op-8 me-1">
-                                        <i class="far fa-envelope"></i>
-                                    </button>
-                                    <button class="btn btn-icon btn-link btn-danger op-8">
-                                        <i class="fas fa-ban"></i>
-                                    </button>
-                                </div>
-                                <div class="item-list">
-                                    <div class="avatar">
-                                        <span class="avatar-title rounded-circle border border-white bg-secondary">F</span>
-                                    </div>
-                                    <div class="info-user ms-3">
-                                        <div class="username">Farrah</div>
-                                        <div class="status">Marketing</div>
-                                    </div>
-                                    <button class="btn btn-icon btn-link op-8 me-1">
-                                        <i class="far fa-envelope"></i>
-                                    </button>
-                                    <button class="btn btn-icon btn-link btn-danger op-8">
-                                        <i class="fas fa-ban"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+
+            <div class="card card-round shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-title mb-0"><i class="fas fa-spa text-primary me-1"></i> Antrian Aktif Saat Ini</div>
+                    <span class="badge badge-salon">{{ $activeQueuesCount }} Antrian</span>
+                </div>
+                <div class="card-body p-2">
+                    <div class="table-responsive">
+                        <table class="table table-mobile-card align-items-center mb-0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Antrian</th>
+                                    <th>Pelanggan</th>
+                                    <th>Layanan & Stylist</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($activeQueues as $q)
+                                    <tr>
+                                        <td class="fw-bold text-primary" data-label="Antrian">#{{ str_pad($q->queue_number, 2, '0', STR_PAD_LEFT) }}</td>
+                                        <td data-label="Pelanggan">
+                                            <div>
+                                                <div class="fw-bold">{{ $q->customer?->name ?? 'Walk-In' }}</div>
+                                                <small class="text-muted">{{ $q->service_order_number }}</small>
+                                            </div>
+                                        </td>
+                                        <td class="small" data-label="Layanan">
+                                            <div>
+                                                @foreach ($q->details as $d)
+                                                    <div>• {{ $d->service_name_snapshot }} ({{ $d->employee?->name ?? '-' }})</div>
+                                                @endforeach
+                                            </div>
+                                        </td>
+                                        <td data-label="Status">
+                                            <span class="badge bg-info text-uppercase">{{ str_replace('_', ' ', $q->status) }}</span>
+                                        </td>
+                                        <td class="text-end" data-label="Aksi">
+                                            <a href="{{ route('pos.index', ['service_order_id' => $q->id]) }}" class="btn btn-xs btn-salon">
+                                                <i class="fas fa-cash-register me-1"></i> Kasir
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">Tidak ada antrian yang sedang menunggu saat ini.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-                <div class="col-md-8">
-                    <div class="card card-round">
-                        <div class="card-header">
-                            <div class="card-head-row card-tools-still-right">
-                                <div class="card-title">Transaction History</div>
-                                <div class="card-tools">
-                                    <div class="dropdown">
-                                        <button class="btn btn-icon btn-clean me-0" type="button"
-                                            id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true"
-                                            aria-expanded="false">
-                                            <i class="fas fa-ellipsis-h"></i>
-                                        </button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <a class="dropdown-item" href="#">Action</a>
-                                            <a class="dropdown-item" href="#">Another action</a>
-                                            <a class="dropdown-item" href="#">Something else here</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            </div>
+        </div>
+
+        {{-- TAB 2: Antrian Layanan Aktif --}}
+        <div data-tab-pane="queues" class="d-none">
+            <div class="card card-round shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-title mb-0"><i class="fas fa-spa text-primary me-1"></i> Antrian & Layanan Berlangsung Hari Ini</div>
+                    <a href="{{ route('bookings.index') }}" class="btn btn-xs btn-outline-primary">Kelola Semua Antrian</a>
+                </div>
+                <div class="card-body p-2">
+                    <div class="table-responsive">
+                        <table class="table table-mobile-card align-items-center mb-0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Antrian</th>
+                                    <th>Pelanggan</th>
+                                    <th>Layanan & Stylist</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($activeQueues as $q)
+                                    <tr>
+                                        <td class="fw-bold text-primary" data-label="Antrian">#{{ str_pad($q->queue_number, 2, '0', STR_PAD_LEFT) }}</td>
+                                        <td data-label="Pelanggan">
+                                            <div>
+                                                <div class="fw-bold">{{ $q->customer?->name ?? 'Walk-In' }}</div>
+                                                <small class="text-muted">{{ $q->service_order_number }}</small>
+                                            </div>
+                                        </td>
+                                        <td class="small" data-label="Layanan">
+                                            <div>
+                                                @foreach ($q->details as $d)
+                                                    <div>• {{ $d->service_name_snapshot }} ({{ $d->employee?->name ?? '-' }})</div>
+                                                @endforeach
+                                            </div>
+                                        </td>
+                                        <td data-label="Status">
+                                            <span class="badge bg-info text-uppercase">{{ str_replace('_', ' ', $q->status) }}</span>
+                                        </td>
+                                        <td class="text-end" data-label="Aksi">
+                                            <a href="{{ route('pos.index', ['service_order_id' => $q->id]) }}" class="btn btn-xs btn-salon">
+                                                <i class="fas fa-cash-register me-1"></i> Bayar di POS
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">Tidak ada antrian yang sedang menunggu saat ini.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- TAB 3: Performa Stylist & Transaksi Terakhir --}}
+        <div data-tab-pane="performance" class="d-none">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card card-round shadow-sm mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="card-title mb-0"><i class="fas fa-award text-warning me-1"></i> Top Stylist Bulan Ini</div>
+                            <a href="{{ route('reports.index', ['tab' => 'commissions']) }}" class="btn btn-xs btn-outline-secondary">Detail</a>
                         </div>
-                        <div class="card-body p-0">
+                        <div class="card-body p-2">
                             <div class="table-responsive">
-                                <!-- Projects table -->
-                                <table class="table align-items-center mb-0">
+                                <table class="table table-mobile-card align-items-center mb-0">
                                     <thead class="thead-light">
                                         <tr>
-                                            <th scope="col">Payment Number</th>
-                                            <th scope="col" class="text-end">Date & Time</th>
-                                            <th scope="col" class="text-end">Amount</th>
-                                            <th scope="col" class="text-end">Status</th>
+                                            <th>Stylist</th>
+                                            <th class="text-center">Layanan</th>
+                                            <th class="text-end">Komisi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @forelse ($topStylistsThisMonth as $ts)
+                                            <tr>
+                                                <td class="fw-bold" data-label="Stylist">{{ $ts->employee?->name ?? '-' }}</td>
+                                                <td class="text-center" data-label="Layanan">{{ $ts->service_count }}x</td>
+                                                <td class="text-end fw-bold text-primary" data-label="Komisi">Rp {{ number_format((float) $ts->total_commission, 0, ',', '.') }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted py-3">Belum ada komisi tercatat bulan ini.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card card-round shadow-sm">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div class="card-title mb-0"><i class="fas fa-receipt text-success me-1"></i> Transaksi POS Terakhir</div>
+                            <a href="{{ route('transactions.index') }}" class="btn btn-xs btn-outline-secondary">Semua</a>
+                        </div>
+                        <div class="card-body p-2">
+                            <div class="table-responsive">
+                                <table class="table table-mobile-card align-items-center mb-0">
+                                    <thead class="thead-light">
                                         <tr>
-                                            <th scope="row">
-                                                <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                                                    <i class="fa fa-check"></i>
-                                                </button>
-                                                Payment from #10231
-                                            </th>
-                                            <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                            <td class="text-end">$250.00</td>
-                                            <td class="text-end">
-                                                <span class="badge badge-success">Completed</span>
-                                            </td>
+                                            <th>No. Struk</th>
+                                            <th class="text-end">Total</th>
+                                            <th class="text-center">Status</th>
                                         </tr>
-                                        <tr>
-                                            <th scope="row">
-                                                <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                                                    <i class="fa fa-check"></i>
-                                                </button>
-                                                Payment from #10231
-                                            </th>
-                                            <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                            <td class="text-end">$250.00</td>
-                                            <td class="text-end">
-                                                <span class="badge badge-success">Completed</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">
-                                                <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                                                    <i class="fa fa-check"></i>
-                                                </button>
-                                                Payment from #10231
-                                            </th>
-                                            <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                            <td class="text-end">$250.00</td>
-                                            <td class="text-end">
-                                                <span class="badge badge-success">Completed</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">
-                                                <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                                                    <i class="fa fa-check"></i>
-                                                </button>
-                                                Payment from #10231
-                                            </th>
-                                            <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                            <td class="text-end">$250.00</td>
-                                            <td class="text-end">
-                                                <span class="badge badge-success">Completed</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">
-                                                <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                                                    <i class="fa fa-check"></i>
-                                                </button>
-                                                Payment from #10231
-                                            </th>
-                                            <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                            <td class="text-end">$250.00</td>
-                                            <td class="text-end">
-                                                <span class="badge badge-success">Completed</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">
-                                                <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                                                    <i class="fa fa-check"></i>
-                                                </button>
-                                                Payment from #10231
-                                            </th>
-                                            <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                            <td class="text-end">$250.00</td>
-                                            <td class="text-end">
-                                                <span class="badge badge-success">Completed</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th scope="row">
-                                                <button class="btn btn-icon btn-round btn-success btn-sm me-2">
-                                                    <i class="fa fa-check"></i>
-                                                </button>
-                                                Payment from #10231
-                                            </th>
-                                            <td class="text-end">Mar 19, 2020, 2.45pm</td>
-                                            <td class="text-end">$250.00</td>
-                                            <td class="text-end">
-                                                <span class="badge badge-success">Completed</span>
-                                            </td>
-                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($recentTransactions as $trx)
+                                            <tr>
+                                                <td data-label="No. Struk">
+                                                    <div>
+                                                        <a href="{{ route('pos.receipt', $trx->id) }}" class="fw-bold text-decoration-none">
+                                                            {{ $trx->transaction_number }}
+                                                        </a>
+                                                        <div class="small text-muted">{{ $trx->customer?->name ?? 'Umum' }}</div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-end fw-bold" data-label="Total">Rp {{ number_format((float) $trx->grand_total, 0, ',', '.') }}</td>
+                                                <td class="text-center" data-label="Status">
+                                                    <span class="badge bg-{{ $trx->status === 'paid' ? 'success' : 'danger' }}">
+                                                        {{ strtoupper($trx->status) }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted py-3">Belum ada transaksi.</td>
+                                            </tr>
+                                        @endforelse
                                     </tbody>
                                 </table>
                             </div>
@@ -519,20 +298,4 @@
             </div>
         </div>
     </div>
-
-    {{-- <div class="row">
-        <div class="col-12">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Selamat Datang</h6>
-                </div>
-                <div class="card-body">
-                    <p>Halo, <strong>{{ Auth::user()->name }}</strong>! Anda login sebagai
-                        <strong>{{ Auth::user()->roleRelation?->rNama ?? '-' }}</strong>.
-                    </p>
-                    <p>Email: {{ Auth::user()->email }}</p>
-                </div>
-            </div>
-        </div>
-    </div> --}}
 @endsection

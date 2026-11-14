@@ -1,44 +1,44 @@
 .bg-gradient-primary {
-  background-color: #121358;
-  background-image: linear-gradient(180deg, #232F72 10%, #2F578A 100%);
+  background-color: #D4C7B6;
+  background-image: linear-gradient(180deg, #D4C7B6 10%, #C6B6A2 100%);
   background-size: cover;
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #121358;
-  border-color: #121358;
+  color: #FFFFFF;
+  background-color: #841CC9;
+  border-color: #841CC9;
 }
 
 .btn-primary:hover {
-  color: #fff;
-  background-color: #232F72;
-  border-color: #2F578A;
+  color: #FFFFFF;
+  background-color: #6B15A3;
+  border-color: #6B15A3;
 }
 
 .btn-primary:focus, .btn-primary.focus {
-  color: #fff;
-  background-color: #232F72;
-  border-color: #2F578A;
-  box-shadow: 0 0 0 0.2rem rgba(105, 136, 228, 0.5);
+  color: #FFFFFF;
+  background-color: #6B15A3;
+  border-color: #6B15A3;
+  box-shadow: 0 0 0 0.2rem rgba(132, 28, 201, 0.35);
 }
 
 .btn-primary.disabled, .btn-primary:disabled {
-  color: #fff;
-  background-color: #121358;
-  border-color: #121358;
+  color: #FFFFFF;
+  background-color: #841CC9;
+  border-color: #841CC9;
 }
 
 .btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active,
 .show > .btn-primary.dropdown-toggle {
-  color: #fff;
-  background-color: #2F578A;
-  border-color: #244ec9;
+  color: #FFFFFF;
+  background-color: #6B15A3;
+  border-color: #571085;
 }
 
 .btn-primary:not(:disabled):not(.disabled):active:focus, .btn-primary:not(:disabled):not(.disabled).active:focus,
 .show > .btn-primary.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.2rem rgba(105, 136, 228, 0.5);
+  box-shadow: 0 0 0 0.2rem rgba(132, 28, 201, 0.35);
 }
 
 /* LOADING CSS START */
@@ -113,21 +113,6 @@ position:absolute;top:0px;left:0px;width:100%;height:100%;text-align:center;back
 #Moduleloader-page img{
 margin-top:-19px;position:relative;top:50%;width:38px;height:38px;z-index:9999;
 }
-.navbar {
-position: relative;
-top: -100px;
-transition: all 0.5s cubic-bezier(0.75, 0.2, 0.26, 0.7);
-}
-.navbar-left {
-position: relative;
-left: -100px;
-transition: all 0.5s cubic-bezier(0.75, 0.2, 0.26, 0.7);
-}
-.bottom-slide {
-position: relative;
-bottom: -100px;
-transition: all 0.5s cubic-bezier(0.75, 0.2, 0.26, 0.7);
-}
 .card-horizontal {
   display: flex;
   flex: 1 1 auto;
@@ -153,15 +138,15 @@ transition: all 0.5s cubic-bezier(0.75, 0.2, 0.26, 0.7);
 
 .page-item.active .page-link {
     z-index: 3;
-    color: #fff;
-    background-color: #121358;
-    border-color: #121358;
+    color: #FFFFFF;
+    background-color: #841CC9;
+    border-color: #841CC9;
 }
 
 .page-item.disabled .page-link {
     color: #858796;
     pointer-events: none;
-    background-color: #fff;
+    background-color: #FFFFFF;
     border-color: #dddfeb;
 }
 
@@ -171,8 +156,8 @@ transition: all 0.5s cubic-bezier(0.75, 0.2, 0.26, 0.7);
     padding: 0.5rem 0.75rem;
     margin-left: -1px;
     line-height: 1.25;
-    color: #121358;
-    background-color: #fff;
+    color: #231F20;
+    background-color: #FFFFFF;
     border: 1px solid #dddfeb;
     text-decoration: none;
     transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
@@ -181,16 +166,16 @@ transition: all 0.5s cubic-bezier(0.75, 0.2, 0.26, 0.7);
 
 .page-link:hover {
     z-index: 2;
-    color: #0d0a3a;
+    color: #841CC9;
     text-decoration: none;
-    background-color: #eaecf4;
-    border-color: #dddfeb;
+    background-color: #F5EAFC;
+    border-color: #DFBFF5;
 }
 
 .page-link:focus {
     z-index: 3;
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(18, 19, 88, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(132, 28, 201, 0.25);
 }
 
 /* Small pagination for mobile */
@@ -218,8 +203,8 @@ transition: all 0.5s cubic-bezier(0.75, 0.2, 0.26, 0.7);
 }
 
 .select2-container--bootstrap4.select2-container--focus .select2-selection {
-    border-color: #121358 !important;
-    box-shadow: 0 0 0 0.2rem rgba(18, 19, 88, 0.15) !important;
+    border-color: #841CC9 !important;
+    box-shadow: 0 0 0 0.2rem rgba(132, 28, 201, 0.15) !important;
 }
 
 /* Placeholder */
@@ -369,10 +354,10 @@ transition: all 0.5s cubic-bezier(0.75, 0.2, 0.26, 0.7);
     border-bottom: none;
 }
 
-/* Hover — text putih + gradient background + centang kanan */
+/* Hover — text putih + aksen #841CC9 + centang kanan */
 .select2-dropdown-custom .select2-results__option--highlighted {
-    background: linear-gradient(135deg, #121358 0%, #232F72 100%) !important;
-    color: #fff !important;
+    background: #841CC9 !important;
+    color: #FFFFFF !important;
     padding-left: 0.9rem !important;
     padding-right: 2rem !important;
     position: relative !important;
@@ -532,122 +517,6 @@ transition: all 0.5s cubic-bezier(0.75, 0.2, 0.26, 0.7);
 
 /* ── END SWEETALERT2 ───────────────────────────────── */
 /* LOADING CSS END */
-
-/* ══════════════════════════════════════════════════════════
-   MOBILE OFF-CANVAS DRAWER  (< 768px)
-   .sidebar-toggled + .toggled ditambahkan oleh sb-admin-2.js;
-   di bawah ini class tersebut diartikan ulang sebagai drawer terbuka.
-   ══════════════════════════════════════════════════════════ */
-@media (max-width: 767.98px) {
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 14rem !important;          /* mengalahkan base .sidebar { width: 6.5rem } */
-    min-height: 100vh;
-    min-height: 100dvh;               /* aman URL bar iOS (fallback di atas) */
-    z-index: 1040;                    /* di bawah modal (1050), di atas backdrop (1039) */
-    transform: translateX(-100%);     /* off-canvas, tersembunyi */
-    transition: transform 0.3s ease;
-    overflow: visible !important;     /* netralkan base .sidebar.toggled{overflow:hidden!important} */
-    overflow-y: auto !important;      /* tapi drawer tetap bisa di-scroll */
-  }
-  body.sidebar-toggled .sidebar,
-  .sidebar.toggled {                  /* sb-admin-2.js menambah .toggled bersama class body */
-    transform: translateX(0);
-    width: 14rem !important;
-    overflow: visible !important;
-    overflow-y: auto !important;
-  }
-
-  /* ── Mode nav diperluas di dalam drawer ──────────────────
-     (meniru blok @media (min-width: 768px) di sb-admin-2.css,
-     karena di bawah 768px template merender icon rail dengan
-     submenu flyout absolut keluar dari drawer) */
-  .sidebar .nav-item .collapse {
-    position: relative;
-    left: 0;
-    top: 0;
-    z-index: 1;
-    -webkit-animation: none;
-    animation: none;
-  }
-  .sidebar .nav-item .collapse .collapse-inner {
-    border-radius: 0;
-    box-shadow: none;
-  }
-  .sidebar .nav-item .collapsing {
-    display: block;
-    transition: height 0.15s ease;
-  }
-  .sidebar .nav-item .collapse,
-  .sidebar .nav-item .collapsing {
-    margin: 0 1rem;
-  }
-  .sidebar .nav-item .nav-link {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 1rem;
-  }
-  .sidebar .nav-item .nav-link i {
-    font-size: 0.85rem;
-    margin-right: 0.25rem;
-  }
-  .sidebar .nav-item .nav-link span {
-    font-size: 0.85rem;
-    display: inline;
-  }
-  .sidebar .nav-item .nav-link[data-toggle="collapse"]::after {
-    width: 1rem;
-    text-align: center;
-    float: right;
-    vertical-align: 0;
-    border: 0;
-    font-weight: 900;
-    content: '\f107';
-    font-family: 'Font Awesome 5 Free';
-  }
-  .sidebar .nav-item .nav-link[data-toggle="collapse"].collapsed::after {
-    content: '\f105';
-  }
-  .sidebar .sidebar-brand .sidebar-brand-icon i {
-    font-size: 2rem;
-  }
-  .sidebar .sidebar-brand .sidebar-brand-text {
-    display: inline;
-  }
-  .sidebar .sidebar-heading {
-    text-align: left;
-  }
-
-  /* Scroll lock saat drawer terbuka — !important mengalahkan inline
-     overflow-y:auto yang dipasang custom.js saat window load */
-  body.sidebar-toggled {
-    overflow: hidden !important;
-  }
-
-  /* Backdrop */
-  .sidebar-backdrop {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1039;
-    background: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-  }
-  body.sidebar-toggled .sidebar-backdrop {
-    display: block;
-    opacity: 1;
-    visibility: visible;
-  }
-}
 
 /* ══════════════════════════════════════════════════════════
    MOBILE CARD TABLES  (< 576px) — baris jadi kartu bertumpuk

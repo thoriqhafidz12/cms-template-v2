@@ -57,6 +57,18 @@ class UserController extends BaseController
                 'exists' => 'role,rId',
                 'options' => [], // filled via extraViewData
             ],
+            [
+                'name' => 'is_active',
+                'label' => 'Status Akun',
+                'placeholder' => '-- Pilih Status --',
+                'type' => 'select',
+                'col' => 'col-md-12',
+                'required' => false,
+                'options' => [
+                    ['value' => 1, 'label' => 'Aktif'],
+                    ['value' => 0, 'label' => 'Nonaktif'],
+                ],
+            ],
         ];
 
         $this->grid = [
@@ -74,6 +86,11 @@ class UserController extends BaseController
                 'label' => 'Role',
                 'field' => 'rNama',
                 'type' => 'text'
+            ],
+            [
+                'label' => 'Status',
+                'field' => 'status_label',
+                'type' => 'badge'
             ]
         ];
 
@@ -92,7 +109,7 @@ class UserController extends BaseController
 
         // Pilih kolom eksplisit — jangan ikutkan password hash ke hasil listing
         $query = User::leftJoin('role', 'users.role', '=', 'role.rId')
-            ->select('users.id', 'users.name', 'users.email', 'users.role', 'users.created_at', 'users.updated_at', 'role.rNama');
+            ->select('users.id', 'users.name', 'users.email', 'users.role', 'users.is_active', 'users.created_at', 'users.updated_at', 'role.rNama');
 
         if ($search && $this->searchColumn) {
             $columns = (array) $this->searchColumn;
@@ -106,6 +123,11 @@ class UserController extends BaseController
         $items = $query->orderBy($this->primaryKey, 'desc')
             ->paginate(10)
             ->withQueryString();
+
+        $items->getCollection()->transform(function ($u) {
+            $u->status_label = ((int) ($u->is_active ?? 1) === 1) ? 'Aktif' : 'Nonaktif';
+            return $u;
+        });
 
         $editData = null;
         if ($editId) {

@@ -40,6 +40,57 @@ abstract class BaseController extends Controller
     protected array $extraViewData = [];
 
     /**
+     * Default index listing + form (two-column layout via master.blade.php).
+     * Child controller dapat meng-override jika membutuhkan custom join.
+     */
+    public function index(Request $request): View
+    {
+        $search = $request->get('search');
+        $editId = $request->get('edit');
+
+        $modelClass = $this->model;
+        $query = $modelClass::query();
+
+        if ($this->withRelation) {
+            $query->with($this->withRelation);
+        }
+
+        if ($search && $this->searchColumn) {
+            $columns = (array) $this->searchColumn;
+            $query->where(function ($q) use ($columns, $search) {
+                foreach ($columns as $col) {
+                    $q->orWhere($col, 'like', "%{$search}%");
+                }
+            });
+        }
+
+        $items = $query->orderBy($this->primaryKey, 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        $editData = null;
+        if ($editId) {
+            $editData = $modelClass::where($this->primaryKey, $editId)->first();
+        }
+
+        $extra = [];
+        foreach ($this->extraViewData as $key => $resolver) {
+            $extra[$key] = is_callable($resolver) ? $resolver() : $resolver;
+        }
+
+        return view('master', array_merge([
+            'items' => $items,
+            'search' => $search,
+            'editData' => $editData,
+            'form' => $this->form,
+            'route' => $this->route,
+            'primaryKey' => $this->primaryKey,
+            'titlePage' => $this->titlePage,
+            'grid' => $this->grid,
+        ], $extra));
+    }
+
+    /**
      * Redirect create ke index (form tersedia di halaman index).
      */
     public function create(): RedirectResponse
@@ -152,7 +203,9 @@ abstract class BaseController extends Controller
                     break;
                 case 'select':
                 case 'autocomplete':
-                    $fieldRules[] = 'integer';
+                    $isStringSelect = (!empty($field['rule_type']) && $field['rule_type'] === 'string')
+                        || (empty($field['exists']) && !empty($field['options']) && is_array($field['options']) && isset($field['options'][0]['value']) && !is_numeric($field['options'][0]['value']));
+                    $fieldRules[] = $isStringSelect ? 'string' : 'integer';
                     if (!empty($field['exists'])) {
                         $fieldRules[] = 'exists:' . $field['exists'];
                     }
@@ -160,6 +213,13 @@ abstract class BaseController extends Controller
                 case 'angka':
                 case 'number':
                     $fieldRules[] = 'numeric';
+                    break;
+                case 'date':
+                    $fieldRules[] = 'date';
+                    break;
+                case 'textarea':
+                    $fieldRules[] = 'string';
+                    $fieldRules[] = 'max:1000';
                     break;
                 default:
                     $fieldRules[] = 'string';

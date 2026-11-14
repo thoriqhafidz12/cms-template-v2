@@ -29,6 +29,16 @@ class CheckRole
             return redirect()->route('login');
         }
 
+        if (isset($user->is_active) && (int) $user->is_active === 0) {
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')->withErrors([
+                'email' => 'Akun Anda telah dinonaktifkan.',
+            ]);
+        }
+
         $routeName = $request->route()?->getName();
 
         // Route tanpa nama (mis. closure '/') → tidak dicek

@@ -56,7 +56,22 @@ class LoginController extends Controller
         $remember = $request->boolean('remember');
 
         if (Auth::attempt($credentials, $remember)) {
+            $user = Auth::user();
+            if (isset($user->is_active) && (int) $user->is_active === 0) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return back()
+                    ->withErrors(['email' => 'Akun Anda sedang dinonaktifkan. Hubungi Administrator.'])
+                    ->onlyInput('email');
+            }
+
             $request->session()->regenerate();
+
+            if (\Illuminate\Support\Facades\Schema::hasTable('audit_logs')) {
+                \App\Models\AuditLog::record('login', 'auth', "User {$user->name} berhasil login.");
+            }
 
             return redirect()->intended(route('dashboard'));
         }
